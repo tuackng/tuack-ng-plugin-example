@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+
+      - name: 格式检查
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --target wasm32-wasip1 -- -D warnings
+      - name: 构建
+        run: cargo build --target wasm32-wasip1 --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: example.wasm
+          path: target/wasm32-wasip1/release/tuack_ng_plugin_example.wasm
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: example.wasm
+          path: dist
+      - name: 打包（plugin.toml + entry）
+        run: |
+          cp plugin.toml dist/
+          mv dist/tuack_ng_plugin_example.wasm dist/example.wasm
+          (cd dist && zip -r ../example.zip .)
+          unzip -l example.zip
+      - name: 创建 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: example.zip

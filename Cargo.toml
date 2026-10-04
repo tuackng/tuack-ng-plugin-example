@@ -1,0 +1,18 @@
+[package]
+name = "tuack-ng-plugin-example"
+version = "1.1.0"
+edition = "2024"
+license = "MIT"
+description = "Tuack-NG 示例插件"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+tuack-plugin-sdk = "2.0.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

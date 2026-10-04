@@ -1,0 +1,34 @@
+name = "example"
+version = "1.1.0"
+description = "示例插件"
+authors = ["Tuack-NG"]
+license = "MIT"
+repo_url = "https://github.com/tuackng/tuack-ng-plugin-example"
+url = "https://github.com/tuackng/tuack-ng-plugin-example"
+pluginapi = "2.0.0"
+entry = "example.wasm"
+artifact_name = "example.zip"
+
+[[components]]
+name = "example-processor"
+type = "processor"
+func = "process_example"
+wasi = true
+
+[[components]]
+name = "example-renderer"
+type = "renderer"
+func = "render_example"
+wasi = true
+
+[[components]]
+name = "example-dumper"
+type = "dumper"
+func = "dump_example"
+wasi = true
+
+[[components]]
+name = "example"
+type = "ren_template"
+renderer = "example-renderer"
+processors = ["example-processor"]
